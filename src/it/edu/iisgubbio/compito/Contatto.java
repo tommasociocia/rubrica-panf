@@ -1,26 +1,26 @@
 package it.edu.iisgubbio.compito;
 
 public class Contatto {
-	String nome;
-	String cognome;
+	String nomeContatto;
+	String cognomeContatto;
 	String numeroTelefono;
 
 	public Contatto(String nomeNuovo, String cognomeNuovo, String telefonoNuovo) {
-		nome = nomeNuovo;
-		cognome = cognomeNuovo;
+		nomeContatto = nomeNuovo;
+		cognomeContatto = cognomeNuovo;
 		numeroTelefono = telefonoNuovo;
 	}
 
 	boolean contiene(String ricercaScritta) {
-		return nome.toLowerCase().contains(ricercaScritta) || cognome.toLowerCase().contains(ricercaScritta);
+		return nomeContatto.toLowerCase().contains(ricercaScritta) || cognomeContatto.toLowerCase().contains(ricercaScritta);
 	}
 
-	String toCsv() {
-		return "CONTATTO;" + nome + ";" + cognome + ";" + numeroTelefono + ";";
+	String testoCsv() {
+		return "CONTATTO;" + nomeContatto + ";" + cognomeContatto + ";" + numeroTelefono + ";";
 	}
 
 	@Override
 	public String toString() {
-		return nome + " " + cognome + " - " + numeroTelefono;
+		return nomeContatto + " " + cognomeContatto + " - " + numeroTelefono;
 	}
 }

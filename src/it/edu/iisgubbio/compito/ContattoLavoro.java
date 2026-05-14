@@ -1,20 +1,20 @@
 package it.edu.iisgubbio.compito;
 
 public class ContattoLavoro extends Contatto {
-	String azienda;
+	String aziendaContatto;
 
 	public ContattoLavoro(String nomeNuovo, String cognomeNuovo, String telefonoNuovo, String aziendaNuova) {
 		super(nomeNuovo, cognomeNuovo, telefonoNuovo);
-		azienda = aziendaNuova;
+		aziendaContatto = aziendaNuova;
 	}
 
 	@Override
-	String toCsv() {
-		return "LAVORO;" + nome + ";" + cognome + ";" + numeroTelefono + ";" + azienda;
+	String testoCsv() {
+		return "LAVORO;" + nomeContatto + ";" + cognomeContatto + ";" + numeroTelefono + ";" + aziendaContatto;
 	}
 
 	@Override
 	public String toString() {
-		return "Lavoro: " + nome + " " + cognome + " - " + numeroTelefono + " - " + azienda;
+		return "Lavoro: " + nomeContatto + " " + cognomeContatto + " - " + numeroTelefono + " - " + aziendaContatto;
 	}
 }

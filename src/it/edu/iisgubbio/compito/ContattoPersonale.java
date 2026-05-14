@@ -1,20 +1,20 @@
 package it.edu.iisgubbio.compito;
 
 public class ContattoPersonale extends Contatto {
-	String email;
+	String emailContatto;
 
 	public ContattoPersonale(String nomeNuovo, String cognomeNuovo, String telefonoNuovo, String emailNuova) {
 		super(nomeNuovo, cognomeNuovo, telefonoNuovo);
-		email = emailNuova;
+		emailContatto = emailNuova;
 	}
 
 	@Override
-	String toCsv() {
-		return "PERSONALE;" + nome + ";" + cognome + ";" + numeroTelefono + ";" + email;
+	String testoCsv() {
+		return "PERSONALE;" + nomeContatto + ";" + cognomeContatto + ";" + numeroTelefono + ";" + emailContatto;
 	}
 
 	@Override
 	public String toString() {
-		return "Personale: " + nome + " " + cognome + " - " + numeroTelefono + " - " + email;
+		return "Personale: " + nomeContatto + " " + cognomeContatto + " - " + numeroTelefono + " - " + emailContatto;
 	}
 }

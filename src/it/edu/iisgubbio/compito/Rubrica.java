@@ -60,12 +60,11 @@ public class Rubrica extends Application {
 		griglia.add(pulsanteAggiungi, 1, 7);
 		griglia.add(etichettaErrore, 0, 8, 2, 1);
 
-		Scene scena = new Scene(griglia, 520, 430);
-		scena.getStylesheets().add("style.css");
+		Scene scenaRubrica = new Scene(griglia, 520, 430);
+		scenaRubrica.getStylesheets().add("style.css");
 		primaryStage.setTitle("Rubrica telefonica");
-		primaryStage.setScene(scena);
+		primaryStage.setScene(scenaRubrica);
 		primaryStage.show();
-
 		caricaContatti();
 		aggiornaLista();
 		sceltaTipo.setOnAction(evento -> cambiaTipo());
@@ -138,16 +137,16 @@ public class Rubrica extends Application {
 	}
 
 	Contatto creaContatto(String rigaLetta) {
-		String parti[] = rigaLetta.split(";");
+		String partiRiga[] = rigaLetta.split(";");
 		// Formato CSV: TIPO;nome;cognome;telefono;email oppure TIPO;nome;cognome;telefono;azienda
-		if (parti.length < 5) {
+		if (partiRiga.length < 5) {
 			return null;
 		}
-		if (parti[0].equals("PERSONALE")) {
-			return new ContattoPersonale(parti[1], parti[2], parti[3], parti[4]);
+		if (partiRiga[0].equals("PERSONALE")) {
+			return new ContattoPersonale(partiRiga[1], partiRiga[2], partiRiga[3], partiRiga[4]);
 		}
-		if (parti[0].equals("LAVORO")) {
-			return new ContattoLavoro(parti[1], parti[2], parti[3], parti[4]);
+		if (partiRiga[0].equals("LAVORO")) {
+			return new ContattoLavoro(partiRiga[1], partiRiga[2], partiRiga[3], partiRiga[4]);
 		}
 		return null;
 	}
@@ -155,14 +154,14 @@ public class Rubrica extends Application {
 	void salvaContatto(Contatto contattoNuovo) {
 		try {
 			FileWriter scrittoreFile = new FileWriter(fileRubrica, true);
-			scrittoreFile.write(contattoNuovo.toCsv() + "\n");
+			scrittoreFile.write(contattoNuovo.testoCsv() + "\n");
 			scrittoreFile.close();
 		} catch (IOException errore) {
 			etichettaErrore.setText("Errore salvataggio CSV");
 		}
 	}
 
-	public static void main(String[] args) {
-		launch(args);
+	public static void main(String[] argomenti) {
+		launch(argomenti);
 	}
 }
