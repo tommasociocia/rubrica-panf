@@ -1,0 +1,17 @@
+.root {
+	-fx-font-size: 14px;
+	-fx-background-color: #f4f6f7;
+}
+
+.button {
+	-fx-background-color: #2f6f7e;
+	-fx-text-fill: white;
+}
+
+.list-view {
+	-fx-border-color: #95a5a6;
+}
+
+.label {
+	-fx-text-fill: #263238;
+}
