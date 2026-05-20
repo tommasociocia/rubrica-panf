@@ -35,7 +35,6 @@ public class Rubrica extends Application {
 	ComboBox<String> sceltaTipo = new ComboBox<String>();
 	Button pulsanteAggiungi = new Button("aggiungi");
 	Button pulsanteElimina = new Button("elimina");
-	Button pulsanteModifica = new Button("modifica");
 	Button pulsanteOrdina = new Button("ordina");
 	ListView<Contatto> listaContatti = new ListView<Contatto>();
 	ArrayList<Contatto> archivioContatti = new ArrayList<Contatto>();
@@ -56,8 +55,7 @@ public class Rubrica extends Application {
 		griglia.add(testoRicerca, 1, 0);
 		griglia.add(listaContatti, 0, 1, 4, 1);
 		griglia.add(pulsanteElimina, 0, 2);
-		griglia.add(pulsanteModifica, 1, 2);
-		griglia.add(pulsanteOrdina, 2, 2);
+		griglia.add(pulsanteOrdina, 1, 2);
 		griglia.add(etichettaTipo, 0, 3);
 		griglia.add(sceltaTipo, 1, 3);
 		griglia.add(etichettaNome, 0, 4);
@@ -79,11 +77,15 @@ public class Rubrica extends Application {
 		// Carica i contatti salvati nel file CSV e li mostra nella lista.
 		caricaContatti();
 		aggiornaLista();
+		// Quando cambi tipo, cambia anche l'etichetta tra email e azienda.
 		sceltaTipo.setOnAction(e -> cambiaTipo());
+		// Quando premi aggiungi, salva un nuovo contatto oppure modifica quello scelto.
 		pulsanteAggiungi.setOnAction(e -> aggiungiContatto());
+		// Quando premi elimina, cancella il contatto selezionato.
 		pulsanteElimina.setOnAction(e -> eliminaContatto());
-		pulsanteModifica.setOnAction(e -> modificaContatto());
+		// Quando premi ordina, mette i contatti in ordine di cognome.
 		pulsanteOrdina.setOnAction(e -> ordinaContatti());
+		// Ogni volta che scrivi nella casella di ricerca, aggiorna la lista dei contatti.
 		testoRicerca.setOnKeyReleased(e -> aggiornaLista());
 		// Se fai doppio click su un contatto, apre la modifica di quel contatto.
 		listaContatti.setOnMouseClicked(evento -> {
@@ -94,111 +96,141 @@ public class Rubrica extends Application {
 	}
 
 	void cambiaTipo() {
+		// Se il tipo scelto e PERSONALE, il campo extra serve per l'email.
 		if (sceltaTipo.getValue().equals("PERSONALE")) {
 			etichettaExtra.setText("email");
 		} else {
+			// Altrimenti il campo extra serve per l'azienda.
 			etichettaExtra.setText("azienda");
 		}
 	}
 
 	void aggiungiContatto() {
+		// Legge i dati scritti nei campi di testo.
 		String nomeNuovo = testoNome.getText();
 		String cognomeNuovo = testoCognome.getText();
 		String telefonoNuovo = testoTelefono.getText();
 		String extraNuovo = testoExtra.getText();
 		Contatto contattoNuovo;
+		// Prende il contatto selezionato, se si sta facendo una modifica.
 		Contatto contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
 
+		// Controlla che i campi principali siano stati compilati.
 		if (nomeNuovo.length() == 0 || cognomeNuovo.length() == 0 || telefonoNuovo.length() == 0) {
 			etichettaErrore.setText("Completa nome, cognome e telefono");
 			return;
 		}
+		// Crea un contatto personale oppure di lavoro in base al tipo scelto.
 		if (sceltaTipo.getValue().equals("PERSONALE")) {
 			contattoNuovo = new ContattoPersonale(nomeNuovo, cognomeNuovo, telefonoNuovo, extraNuovo);
 		} else {
 			contattoNuovo = new ContattoLavoro(nomeNuovo, cognomeNuovo, telefonoNuovo, extraNuovo);
 		}
+		// Se il pulsante e in modalita modifica, sostituisce il contatto selezionato.
 		if (pulsanteAggiungi.getText().equals("modifica") && contattoScelto != null) {
-			int posizioneContatto = archivioContatti.indexOf(contattoScelto);
-			archivioContatti.set(posizioneContatto, contattoNuovo);
+			// Cerca con un for la posizione del contatto selezionato.
+			for (int i = 0; i < archivioContatti.size(); i++) {
+				if (archivioContatti.get(i) == contattoScelto) {
+					// Mette il contatto nuovo al posto di quello vecchio.
+					archivioContatti.set(i, contattoNuovo);
+				}
+			}
+			// Riscrive tutto il file CSV con i dati aggiornati.
 			salvaRubrica();
 			pulsanteAggiungi.setText("aggiungi");
 			etichettaErrore.setText("Contatto modificato");
 		} else {
+			// Se non sta modificando, aggiunge il nuovo contatto all'archivio e al file.
 			archivioContatti.add(contattoNuovo);
 			salvaContatto(contattoNuovo);
 			etichettaErrore.setText("Contatto salvato");
 		}
-		testoNome.clear();
-		testoCognome.clear();
-		testoTelefono.clear();
-		testoExtra.clear();
+		// Svuota i campi dopo aver aggiunto o modificato.
+		testoNome.setText("");
+		testoCognome.setText("");
+		testoTelefono.setText("");
+		testoExtra.setText("");
+		// Aggiorna la lista visibile.
 		aggiornaLista();
 	}
 
+	// Elimina dalla lista e dal file il contatto selezionato.
 	void eliminaContatto() {
+		// Prende il contatto selezionato nella lista.
 		Contatto contattoSelezionato = listaContatti.getSelectionModel().getSelectedItem();
 		if (contattoSelezionato == null) {
 			etichettaErrore.setText("Seleziona un contatto");
 			return;
 		}
+		// Toglie il contatto dall'ArrayList e poi riscrive il file.
 		archivioContatti.remove(contattoSelezionato);
 		salvaRubrica();
 		pulsanteAggiungi.setText("aggiungi");
 		etichettaErrore.setText("Contatto eliminato");
+		// Aggiorna la lista visibile dopo l'eliminazione.
 		aggiornaLista();
 	}
 
+	// Copia nei campi di testo i dati del contatto scelto, cosi possono essere modificati.
 	void modificaContatto() {
+		// Prende il contatto scelto dalla lista.
 		Contatto contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
 		if (contattoScelto == null) {
 			etichettaErrore.setText("Seleziona un contatto");
 			return;
 		}
-		testoNome.setText(contattoScelto.nomeContatto);
-		testoCognome.setText(contattoScelto.cognomeContatto);
-		testoTelefono.setText(contattoScelto.numeroTelefono);
-		if (contattoScelto instanceof ContattoPersonale) {
-			ContattoPersonale contattoPersonale = (ContattoPersonale) contattoScelto;
-			sceltaTipo.setValue("PERSONALE");
-			testoExtra.setText(contattoPersonale.emailContatto);
-		} else {
-			ContattoLavoro contattoLavoro = (ContattoLavoro) contattoScelto;
-			sceltaTipo.setValue("LAVORO");
-			testoExtra.setText(contattoLavoro.aziendaContatto);
-		}
+		// Trasforma il contatto in testo CSV e divide i dati con il punto e virgola.
+		String testoContatto = contattoScelto.testoCsv();
+		String partiContatto[] = testoContatto.split(";");
+		// Copia i dati del contatto nei TextField.
+		sceltaTipo.setValue(partiContatto[0]);
+		testoNome.setText(partiContatto[1]);
+		testoCognome.setText(partiContatto[2]);
+		testoTelefono.setText(partiContatto[3]);
+		testoExtra.setText(partiContatto[4]);
 		cambiaTipo();
+		// Cambia il testo del pulsante, cosi aggiungiContatto capisce che deve modificare.
 		pulsanteAggiungi.setText("modifica");
 		etichettaErrore.setText("Modifica il contatto");
 	}
 
+	// Ordina i contatti in base al cognome e poi salva la rubrica aggiornata.
 	void ordinaContatti() {
+		// Confronta ogni contatto con quelli dopo di lui.
 		for (int primoIndice = 0; primoIndice < archivioContatti.size(); primoIndice++) {
 			for (int secondoIndice = primoIndice + 1; secondoIndice < archivioContatti.size(); secondoIndice++) {
 				Contatto primoContatto = archivioContatti.get(primoIndice);
 				Contatto secondoContatto = archivioContatti.get(secondoIndice);
+				// Se il primo cognome viene dopo il secondo, li scambia.
 				if (primoContatto.cognomeContatto.compareToIgnoreCase(secondoContatto.cognomeContatto) > 0) {
 					archivioContatti.set(primoIndice, secondoContatto);
 					archivioContatti.set(secondoIndice, primoContatto);
 				}
 			}
 		}
+		// Salva e aggiorna la lista ordinata.
 		salvaRubrica();
 		aggiornaLista();
 		etichettaErrore.setText("Lista ordinata");
 	}
 
+	// Aggiorna la ListView mostrando solo i contatti che corrispondono alla ricerca.
 	void aggiornaLista() {
+		// Legge quello che e scritto nella casella ricerca.
 		String ricercaScritta = testoRicerca.getText().toLowerCase();
+		// Svuota la lista visibile prima di riempirla di nuovo.
 		listaContatti.getItems().clear();
 		for (Contatto contattoLetto : archivioContatti) {
+			// Aggiunge solo i contatti che contengono il testo cercato.
 			if (contattoLetto.contiene(ricercaScritta)) {
 				listaContatti.getItems().add(contattoLetto);
 			}
 		}
 	}
 
+	// Legge i contatti dal file CSV e li mette nell'archivio.
 	void caricaContatti() {
+		// Se il file non esiste, non deve caricare niente.
 		if (fileRubrica.exists() == false) {
 			return;
 		}
@@ -207,9 +239,11 @@ public class Rubrica extends Application {
 				BufferedReader lettoreRighe = new BufferedReader(lettoreFile);
 				) {
 			String rigaLetta;
+			// Legge una riga alla volta dal file CSV.
 			while ((rigaLetta = lettoreRighe.readLine()) != null) {
 				Contatto contattoLetto = creaContatto(rigaLetta);
 				if (contattoLetto != null) {
+					// Aggiunge il contatto letto all'archivio.
 					archivioContatti.add(contattoLetto);
 				}
 			}
@@ -233,9 +267,12 @@ public class Rubrica extends Application {
 		return null;
 	}
 
+	// Aggiunge un solo contatto alla fine del file CSV.
 	void salvaContatto(Contatto contattoNuovo) {
 		try {
+			// Apre il file in modalita append, quindi scrive in fondo.
 			FileWriter scrittoreFile = new FileWriter(fileRubrica, true);
+			// Scrive il contatto in formato CSV e va a capo.
 			scrittoreFile.write(contattoNuovo.testoCsv() + "\n");
 			scrittoreFile.close();
 		} catch (IOException errore) {
@@ -243,10 +280,13 @@ public class Rubrica extends Application {
 		}
 	}
 
+	// Riscrive tutto il file CSV con tutti i contatti presenti nell'archivio.
 	void salvaRubrica() {
 		try {
+			// Apre il file senza append, quindi cancella il contenuto vecchio.
 			FileWriter scrittoreFile = new FileWriter(fileRubrica);
 			for (Contatto contattoLetto : archivioContatti) {
+				// Scrive ogni contatto dell'archivio nel file.
 				scrittoreFile.write(contattoLetto.testoCsv() + "\n");
 			}
 			scrittoreFile.close();
