@@ -7,7 +7,7 @@ I contatti vengono salvati nel file `rubrica.csv`, cosi rimangono anche quando i
 ## Suddivisione del progetto
 
 `Rubrica.java`
-Classe principale del programma. Crea la finestra JavaFX, mostra la lista dei contatti, permette ricerca, aggiunta, eliminazione, modifica e ordinamento.
+Classe principale del programma. Crea la finestra JavaFX con una griglia e gestisce ricerca, aggiunta, eliminazione, modifica, ordinamento e file CSV.
 
 `Contatto.java`
 Classe base dei contatti. Contiene nome, cognome e numero di telefono.
@@ -20,6 +20,3 @@ Sottoclasse di `Contatto`. Rappresenta un contatto di lavoro e aggiunge l'aziend
 
 `rubrica.csv`
 File dove sono salvati i contatti. Ogni riga contiene un contatto separato con il punto e virgola.
-
-`style.css`
-File usato per dare un po' di stile alla grafica.

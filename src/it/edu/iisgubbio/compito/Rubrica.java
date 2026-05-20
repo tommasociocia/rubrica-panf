@@ -19,58 +19,39 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class Rubrica extends Application {
-	TextField testoRicerca;
-	TextField testoNome;
-	TextField testoCognome;
-	TextField testoTelefono;
-	TextField testoExtra;
-	ComboBox<String> sceltaTipo;
-	Button pulsanteAggiungi;
-	Button pulsanteElimina;
-	Button pulsanteModifica;
-	Button pulsanteOrdina;
-	Label etichettaExtra;
-	Label etichettaErrore;
-	ListView<Contatto> listaContatti;
-	ArrayList<Contatto> archivioContatti;
-	File fileRubrica;
-	Contatto contattoScelto;
+	GridPane griglia = new GridPane();
+	Label etichettaRicerca = new Label("ricerca");
+	Label etichettaTipo = new Label("tipo");
+	Label etichettaNome = new Label("nome");
+	Label etichettaCognome = new Label("cognome");
+	Label etichettaTelefono = new Label("telefono");
+	Label etichettaExtra = new Label("email");
+	Label etichettaErrore = new Label();
+	TextField testoRicerca = new TextField();
+	TextField testoNome = new TextField();
+	TextField testoCognome = new TextField();
+	TextField testoTelefono = new TextField();
+	TextField testoExtra = new TextField();
+	ComboBox<String> sceltaTipo = new ComboBox<String>();
+	Button pulsanteAggiungi = new Button("aggiungi");
+	Button pulsanteElimina = new Button("elimina");
+	Button pulsanteModifica = new Button("modifica");
+	Button pulsanteOrdina = new Button("ordina");
+	ListView<Contatto> listaContatti = new ListView<Contatto>();
+	ArrayList<Contatto> archivioContatti = new ArrayList<Contatto>();
+	File fileRubrica = new File("rubrica.csv");
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		GridPane griglia = new GridPane();
-		Label etichettaRicerca = new Label("ricerca");
-		Label etichettaTipo = new Label("tipo");
-		Label etichettaNome = new Label("nome");
-		Label etichettaCognome = new Label("cognome");
-		Label etichettaTelefono = new Label("telefono");
-		testoRicerca = new TextField();
-		testoNome = new TextField();
-		testoCognome = new TextField();
-		testoTelefono = new TextField();
-		testoExtra = new TextField();
-		sceltaTipo = new ComboBox<String>();
-		pulsanteAggiungi = new Button("aggiungi");
-		pulsanteElimina = new Button("elimina");
-		pulsanteModifica = new Button("modifica");
-		pulsanteOrdina = new Button("ordina");
-		etichettaExtra = new Label("email");
-		etichettaErrore = new Label();
-		listaContatti = new ListView<Contatto>();
-		archivioContatti = new ArrayList<Contatto>();
-		fileRubrica = new File("rubrica.csv");
-
 		griglia.setPadding(new Insets(10, 10, 10, 10));
 		griglia.setHgap(10);
 		griglia.setVgap(10);
-
 		sceltaTipo.getItems().add("PERSONALE");
 		sceltaTipo.getItems().add("LAVORO");
 		sceltaTipo.setValue("PERSONALE");
 		testoRicerca.setPromptText("cerca nome o cognome");
 		listaContatti.setPrefWidth(560);
 		listaContatti.setPrefHeight(260);
-
 		griglia.add(etichettaRicerca, 0, 0);
 		griglia.add(testoRicerca, 1, 0);
 		griglia.add(listaContatti, 0, 1, 4, 1);
@@ -89,20 +70,22 @@ public class Rubrica extends Application {
 		griglia.add(testoExtra, 1, 7);
 		griglia.add(pulsanteAggiungi, 1, 8);
 		griglia.add(etichettaErrore, 0, 9, 4, 1);
-
 		Scene scenaRubrica = new Scene(griglia, 700, 560);
 		scenaRubrica.getStylesheets().add("style.css");
 		primaryStage.setTitle("Rubrica telefonica");
 		primaryStage.setScene(scenaRubrica);
 		primaryStage.show();
+		
+		// Carica i contatti salvati nel file CSV e li mostra nella lista.
 		caricaContatti();
 		aggiornaLista();
-		sceltaTipo.setOnAction(evento -> cambiaTipo());
-		pulsanteAggiungi.setOnAction(evento -> aggiungiContatto());
-		pulsanteElimina.setOnAction(evento -> eliminaContatto());
-		pulsanteModifica.setOnAction(evento -> modificaContatto());
-		pulsanteOrdina.setOnAction(evento -> ordinaContatti());
-		testoRicerca.setOnKeyReleased(evento -> aggiornaLista());
+		sceltaTipo.setOnAction(e -> cambiaTipo());
+		pulsanteAggiungi.setOnAction(e -> aggiungiContatto());
+		pulsanteElimina.setOnAction(e -> eliminaContatto());
+		pulsanteModifica.setOnAction(e -> modificaContatto());
+		pulsanteOrdina.setOnAction(e -> ordinaContatti());
+		testoRicerca.setOnKeyReleased(e -> aggiornaLista());
+		// Se fai doppio click su un contatto, apre la modifica di quel contatto.
 		listaContatti.setOnMouseClicked(evento -> {
 			if (evento.getClickCount() == 2) {
 				modificaContatto();
@@ -124,6 +107,7 @@ public class Rubrica extends Application {
 		String telefonoNuovo = testoTelefono.getText();
 		String extraNuovo = testoExtra.getText();
 		Contatto contattoNuovo;
+		Contatto contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
 
 		if (nomeNuovo.length() == 0 || cognomeNuovo.length() == 0 || telefonoNuovo.length() == 0) {
 			etichettaErrore.setText("Completa nome, cognome e telefono");
@@ -134,17 +118,16 @@ public class Rubrica extends Application {
 		} else {
 			contattoNuovo = new ContattoLavoro(nomeNuovo, cognomeNuovo, telefonoNuovo, extraNuovo);
 		}
-		if (contattoScelto == null) {
-			archivioContatti.add(contattoNuovo);
-			salvaContatto(contattoNuovo);
-			etichettaErrore.setText("Contatto salvato");
-		} else {
+		if (pulsanteAggiungi.getText().equals("modifica") && contattoScelto != null) {
 			int posizioneContatto = archivioContatti.indexOf(contattoScelto);
 			archivioContatti.set(posizioneContatto, contattoNuovo);
 			salvaRubrica();
-			contattoScelto = null;
 			pulsanteAggiungi.setText("aggiungi");
 			etichettaErrore.setText("Contatto modificato");
+		} else {
+			archivioContatti.add(contattoNuovo);
+			salvaContatto(contattoNuovo);
+			etichettaErrore.setText("Contatto salvato");
 		}
 		testoNome.clear();
 		testoCognome.clear();
@@ -161,15 +144,15 @@ public class Rubrica extends Application {
 		}
 		archivioContatti.remove(contattoSelezionato);
 		salvaRubrica();
-		contattoScelto = null;
 		pulsanteAggiungi.setText("aggiungi");
 		etichettaErrore.setText("Contatto eliminato");
 		aggiornaLista();
 	}
 
 	void modificaContatto() {
-		contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
+		Contatto contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
 		if (contattoScelto == null) {
+			etichettaErrore.setText("Seleziona un contatto");
 			return;
 		}
 		testoNome.setText(contattoScelto.nomeContatto);
