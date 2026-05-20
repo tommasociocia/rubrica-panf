@@ -39,6 +39,7 @@ public class Rubrica extends Application {
 	ListView<Contatto> listaContatti = new ListView<Contatto>();
 	ArrayList<Contatto> archivioContatti = new ArrayList<Contatto>();
 	File fileRubrica = new File("rubrica.csv");
+	int posizioneModifica = -1;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -112,8 +113,6 @@ public class Rubrica extends Application {
 		String telefonoNuovo = testoTelefono.getText();
 		String extraNuovo = testoExtra.getText();
 		Contatto contattoNuovo;
-		// Prende il contatto selezionato, se si sta facendo una modifica.
-		Contatto contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
 
 		// Controlla che i campi principali siano stati compilati.
 		if (nomeNuovo.length() == 0 || cognomeNuovo.length() == 0 || telefonoNuovo.length() == 0) {
@@ -127,16 +126,12 @@ public class Rubrica extends Application {
 			contattoNuovo = new ContattoLavoro(nomeNuovo, cognomeNuovo, telefonoNuovo, extraNuovo);
 		}
 		// Se il pulsante e in modalita modifica, sostituisce il contatto selezionato.
-		if (pulsanteAggiungi.getText().equals("modifica") && contattoScelto != null) {
-			// Cerca con un for la posizione del contatto selezionato.
-			for (int i = 0; i < archivioContatti.size(); i++) {
-				if (archivioContatti.get(i) == contattoScelto) {
-					// Mette il contatto nuovo al posto di quello vecchio.
-					archivioContatti.set(i, contattoNuovo);
-				}
-			}
+		if (pulsanteAggiungi.getText().equals("modifica") && posizioneModifica != -1) {
+			// Mette il contatto nuovo al posto di quello vecchio.
+			archivioContatti.set(posizioneModifica, contattoNuovo);
 			// Riscrive tutto il file CSV con i dati aggiornati.
 			salvaRubrica();
+			posizioneModifica = -1;
 			pulsanteAggiungi.setText("aggiungi");
 			etichettaErrore.setText("Contatto modificato");
 		} else {
@@ -158,13 +153,23 @@ public class Rubrica extends Application {
 	void eliminaContatto() {
 		// Prende il contatto selezionato nella lista.
 		Contatto contattoSelezionato = listaContatti.getSelectionModel().getSelectedItem();
+		int posizioneElimina = -1;
 		if (contattoSelezionato == null) {
 			etichettaErrore.setText("Seleziona un contatto");
 			return;
 		}
-		// Toglie il contatto dall'ArrayList e poi riscrive il file.
-		archivioContatti.remove(contattoSelezionato);
+		// Cerca con un for la posizione del contatto da eliminare.
+		for (int i = 0; i < archivioContatti.size(); i++) {
+			if (archivioContatti.get(i) == contattoSelezionato) {
+				posizioneElimina = i;
+			}
+		}
+		// Toglie il contatto dall'ArrayList usando la posizione trovata.
+		if (posizioneElimina != -1) {
+			archivioContatti.remove(posizioneElimina);
+		}
 		salvaRubrica();
+		posizioneModifica = -1;
 		pulsanteAggiungi.setText("aggiungi");
 		etichettaErrore.setText("Contatto eliminato");
 		// Aggiorna la lista visibile dopo l'eliminazione.
@@ -175,9 +180,16 @@ public class Rubrica extends Application {
 	void modificaContatto() {
 		// Prende il contatto scelto dalla lista.
 		Contatto contattoScelto = listaContatti.getSelectionModel().getSelectedItem();
+		posizioneModifica = -1;
 		if (contattoScelto == null) {
 			etichettaErrore.setText("Seleziona un contatto");
 			return;
+		}
+		// Cerca con un for la posizione del contatto da modificare.
+		for (int i = 0; i < archivioContatti.size(); i++) {
+			if (archivioContatti.get(i) == contattoScelto) {
+				posizioneModifica = i;
+			}
 		}
 		// Trasforma il contatto in testo CSV e divide i dati con il punto e virgola.
 		String testoContatto = contattoScelto.testoCsv();
@@ -202,7 +214,7 @@ public class Rubrica extends Application {
 				Contatto primoContatto = archivioContatti.get(primoIndice);
 				Contatto secondoContatto = archivioContatti.get(secondoIndice);
 				// Se il primo cognome viene dopo il secondo, li scambia.
-				if (primoContatto.cognomeContatto.compareToIgnoreCase(secondoContatto.cognomeContatto) > 0) {
+				if (primoContatto.cognomeContatto.toLowerCase().compareTo(secondoContatto.cognomeContatto.toLowerCase()) > 0) {
 					archivioContatti.set(primoIndice, secondoContatto);
 					archivioContatti.set(secondoIndice, primoContatto);
 				}
