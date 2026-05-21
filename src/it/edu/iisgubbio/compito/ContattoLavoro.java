@@ -10,11 +10,13 @@ public class ContattoLavoro extends Contatto {
 
 	@Override
 	String testoCsv() {
+		// Salva nel CSV con tipo LAVORO.
 		return "LAVORO;" + nomeContatto + ";" + cognomeContatto + ";" + numeroTelefono + ";" + aziendaContatto;
 	}
 
 	@Override
 	public String toString() {
+		// Testo mostrato nella lista per distinguere subito il tipo lavoro.
 		return "Lavoro: " + nomeContatto + " " + cognomeContatto + " - " + numeroTelefono + " - " + aziendaContatto;
 	}
 }

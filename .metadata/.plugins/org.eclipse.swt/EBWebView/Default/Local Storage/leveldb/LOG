@@ -1,3 +1,2 @@
-2026/05/13-09:11:29.786 1c30 Reusing MANIFEST C:\Users\ciocia\Desktop\compito\rubrica-panf\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
-2026/05/13-09:11:29.793 1c30 Recovering log #3
-2026/05/13-09:11:29.795 1c30 Reusing old log C:\Users\ciocia\Desktop\compito\rubrica-panf\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/000003.log 
+2026/05/21-08:24:32.651 24cc Creating DB C:\Users\tommy\Desktop\rubrica-panf\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb since it was missing.
+2026/05/21-08:24:32.677 24cc Reusing MANIFEST C:\Users\tommy\Desktop\rubrica-panf\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
