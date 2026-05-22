@@ -1,12 +1,21 @@
 # Rubrica Telefonica
 
-Questo progetto e una rubrica telefonica fatta in JavaFX.
+Questo progetto e' una rubrica telefonica fatta in JavaFX.
 Serve per salvare, caricare, cercare, aggiungere, eliminare, modificare e ordinare i contatti.
-I contatti vengono salvati nel file `rubrica.csv`, cosi rimangono anche quando il programma viene chiuso.
+I contatti vengono salvati nel file `rubrica.csv`, cosi' rimangono anche quando il programma viene chiuso.
+
+## Interfaccia
+
+La finestra e' divisa in due parti:
+
+- a sinistra ci sono la ricerca, la lista dei contatti e i bottoni `elimina` e `ordina`;
+- a destra ci sono i campi per aggiungere o modificare un contatto.
+
+In questo modo la lista resta ben visibile e i campi per inserire i dati sono separati dalla parte dei contatti salvati.
 
 ## Come funziona
 
-Quando il programma si apre, legge i contatti gia salvati nel file `rubrica.csv` e li mostra nella lista.
+Quando il programma si apre, legge i contatti gia' salvati nel file `rubrica.csv` e li mostra nella lista.
 
 Per aggiungere un contatto bisogna compilare nome, cognome e telefono. Poi si sceglie il tipo di contatto:
 
@@ -23,7 +32,7 @@ Per ordinare i contatti si preme il bottone `ordina`. I contatti vengono ordinat
 
 ## Modifica dei contatti
 
-Non c'e un bottone `modifica`.
+Non c'e' un bottone `modifica`.
 Per modificare un contatto bisogna fare doppio click sul contatto nella lista.
 
 Quando si fa doppio click, i dati del contatto vengono copiati nei campi di testo.
@@ -67,3 +76,7 @@ File dove sono salvati i contatti. Ogni riga contiene un contatto separato con i
 
 `style.css`
 File con alcune impostazioni grafiche semplici, come colore dello sfondo, bottoni, lista ed etichette.
+
+## Avvio
+
+Il programma si avvia eseguendo la classe `Rubrica.java`, che contiene il metodo `main`.
